@@ -20,9 +20,13 @@ let graph_of_graph' a =
 
 let check_topo_on g =
   let l = topological (graph_of_graph' g) in
-  let inverse_l = Array.map (fun _ -> 0) g in
-  List.iteri (fun i node -> inverse_l.(node) <- i) l;
-  Array.for_all Fun.id (Array.mapi (fun i lst -> List.for_all (fun dst -> inverse_l.(i) < inverse_l.(dst)) lst) g)
+  let visited = Array.make (Array.length g) false in
+  let res = ref true in
+  List.iter (fun node ->
+    visited.(node) <- true;
+    List.iter (fun v -> if visited.(v) then res := false) g.(node)
+  ) l;
+  !res
 
 
 let test i (g, b) =
